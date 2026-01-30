@@ -35,6 +35,7 @@ class Asset:
 
 @dataclass
 class Project:
+    orientation: str
     id: str
     title: str
     theme: str
@@ -46,7 +47,7 @@ class Project:
     assets: List[Asset]
 
     @staticmethod
-    def new(title: str, theme: str, style_lock: str, reels: int, rows: int, preview_config: Dict[str, Any]) -> "Project":
+    def new(orientation: str, title: str, theme: str, style_lock: str, reels: int, rows: int, preview_config: Dict[str, Any]) -> "Project":
         return Project(
             id=str(uuid.uuid4()),
             title=title,
