@@ -17,7 +17,7 @@ class Asset:
     provider: str
     model: str
     created_at: float
-    path: str  # relative path within project folder (project root)
+    path: str
     meta: Dict[str, Any]
 
     @staticmethod
