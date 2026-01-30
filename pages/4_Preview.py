@@ -1,6 +1,9 @@
+# pages/4_Preview.py
+
 import streamlit as st
 from pathlib import Path
 from PIL import Image
+
 from core.storage import load_project
 from core.preview_render import render_preview
 
@@ -14,9 +17,12 @@ if not pid:
     st.stop()
 
 project = load_project(BASE, pid)
-st.subheader(project.title)
+cfg = project.preview_config or {}
+TW, TH = cfg.get("canvas", {}).get("w", 1440), cfg.get("canvas", {}).get("h", 810)
 
-# pick latest assets per category
+st.subheader(project.title)
+st.caption(f"Orientation: {project.orientation} | Canvas: {TW}×{TH}")
+
 def latest(category: str):
     for a in project.assets:
         if a.category == category:
@@ -32,15 +38,16 @@ frame = latest("Frame")
 reels = project.reels
 rows = project.rows
 
-st.caption("This preview composes Background → Reel BG → Symbols grid → Frame overlay.")
+st.caption("Preview composes: Background → Reel BG → Symbols grid → Frame overlay.")
 
-# Build a simple symbols grid from the latest symbols (repeat if not enough)
+# Build a simple symbols grid from available symbols (repeat if not enough)
 symbol_imgs = []
 for a in project.assets:
     if a.category == "Symbols":
         p = BASE / "data" / "projects" / pid / a.path
         if p.exists():
             symbol_imgs.append(Image.open(p))
+
 grid = None
 if symbol_imgs:
     grid = []
@@ -52,9 +59,8 @@ if symbol_imgs:
             k += 1
         grid.append(row_imgs)
 
-cfg = project.preview_config
-canvas = (cfg["canvas"]["w"], cfg["canvas"]["h"])
-rw = cfg["reel_window"]
+rw = cfg.get("reel_window", {"x": 400, "y": 170, "w": 640, "h": 420})
+canvas = (TW, TH)
 reel_xywh = (rw["x"], rw["y"], rw["w"], rw["h"])
 
 out = render_preview(
