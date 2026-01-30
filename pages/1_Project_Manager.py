@@ -9,6 +9,20 @@ BASE = Path(__file__).resolve().parents[1]
 
 st.header("🗂️ Project Manager")
 
+orientation = st.selectbox("Orientation", ["Landscape", "Portrait"], index=0)
+
+from core.constants import make_default_preview_config
+
+proj = Project.new(
+    title=title,
+    theme=theme,
+    style_lock=style_lock,
+    reels=int(reels),
+    rows=int(rows),
+    preview_config=make_default_preview_config(orientation),
+    orientation=orientation,
+)
+
 with st.form("create_project", clear_on_submit=False):
     title = st.text_input("Project title", value="My Slot Game")
     theme = st.text_input("Theme", value="Fruits & Phoenix")
